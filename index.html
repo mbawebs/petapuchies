@@ -778,25 +778,31 @@ function doAction(type){
 }
 let musicStarted = false;
 
-function startMusic(){
+async function startMusic(){
+
   if(musicStarted) return;
+
   musicStarted = true;
-startBtn.addEventListener("click", async ()=>{
 
   try{
     await bgMusic.play();
-  }catch(e){}
+  }catch(e){
+    console.log("Audio blocked");
+  }
+}
+  startBtn.addEventListener("pointerdown", async ()=>{
+
+  await startMusic();
 
   startOverlay.style.transition = ".35s ease";
   startOverlay.style.opacity = "0";
+  startOverlay.style.pointerEvents = "none";
 
   setTimeout(()=>{
     startOverlay.remove();
   },350);
 
 });
-  bgMusic.play().catch(()=>{});
-}
 $("petWrap").addEventListener("click",()=>{
   startMusic();
   
