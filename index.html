@@ -124,7 +124,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ma
   filter:drop-shadow(0 7px 5px rgba(0,0,0,.16))
 }
 .pet-name{
-  position:absolute;bottom:-48px;background:white;border-radius:999px;
+  position:absolute;bottom:-18px;background:white;border-radius:999px;
   padding:9px 20px;font-weight:950;box-shadow:0 10px 22px rgba(35,38,70,.14)
 }
 .bubble{
@@ -399,8 +399,8 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
   .pill{font-size:13px;padding:8px 10px}
   .room{min-height:385px}
   .pet-css{width:250px;height:250px}
-  .pet-img{max-height:285px}
-  .pet-name{bottom:-37px;font-size:13px}
+  .pet-img{max-height:270px;transform:translateY(-8px)}
+  .pet-name{bottom:-8px;font-size:13px;padding:7px 16px}
   .game-box{height:88vh;border-width:6px}
 }
 </style>
@@ -656,11 +656,21 @@ function setMainPetSad(isSad){
 
 function flashSad(ms=950){
   setMainPetSad(true);
-  document.querySelectorAll(".drag-pet,.hopper").forEach(el=>el.classList.add("pet-hit"));
+
+  document.querySelectorAll(".drag-pet,.hopper").forEach(el=>{
+    el.classList.add("pet-hit");
+    el.innerHTML = renderPetHTML("game", true);
+  });
+
   clearTimeout(window.sadTimer);
+
   window.sadTimer = setTimeout(()=>{
     setMainPetSad(false);
-    document.querySelectorAll(".drag-pet,.hopper").forEach(el=>el.classList.remove("pet-hit"));
+
+    document.querySelectorAll(".drag-pet,.hopper").forEach(el=>{
+      el.classList.remove("pet-hit");
+      el.innerHTML = renderPetHTML("game", false);
+    });
   }, ms);
 }
 
@@ -866,10 +876,10 @@ function timeout(fn,ms){
   return t;
 }
 
-function addDragPet(){
+function addDragPet(sad=false){
   const petEl = document.createElement("div");
   petEl.className = "drag-pet";
-  petEl.innerHTML = renderPetHTML("game");
+  petEl.innerHTML = renderPetHTML("game", sad);
   gameStage.appendChild(petEl);
   return petEl;
 }
@@ -1100,7 +1110,7 @@ function startCloudGame(){
   ];
 
   let lane = 1;
-  let y = gameBox.clientHeight - 190;
+  let y = gameBox.clientHeight - 205;
   let velocity = 0;
   let gravity = .55;
   let alive = true;
@@ -1123,9 +1133,13 @@ function startCloudGame(){
     clouds.push(cloud);
   }
 
-  for(let i = 0; i < 7; i++){
+  makeCloud(1, gameBox.clientHeight - 110);
+
+  for(let i = 1; i < 7; i++){
     makeCloud(Math.floor(Math.random() * 3), gameBox.clientHeight - 70 - i * 95);
   }
+
+  velocity = -10;
 
   const tap = e=>{
     const rect = gameBox.getBoundingClientRect();
