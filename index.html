@@ -553,7 +553,9 @@ const ASSETS = {
     "assets/platforms/platform_cloud_pink.png?v=hallmark2"
   ]
 };
-
+const bgMusic = new Audio("assets/main_theme.mp3?v=1");
+bgMusic.loop = true;
+bgMusic.volume = 0.35;
 const SAVE_KEY = "yourPetMegaSave_v2";
 
 const defaultState = {
@@ -727,7 +729,14 @@ function doAction(type){
   if(type === "sleep") flashSad(650);
   updateUI();
 }
+let musicStarted = false;
 
+function startMusic(){
+  if(musicStarted) return;
+  musicStarted = true;
+
+  bgMusic.play().catch(()=>{});
+}
 $("petWrap").addEventListener("click",()=>{
   state.happy = clamp(state.happy + 2);
   addXP(1);
