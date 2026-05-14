@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bully Buddy</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(180deg,#8ee7ff,#fff0b8);
+  color:#2b1b12;
+  overflow-x:hidden;
+}
+.app{
+  max-width:480px;
+  margin:auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.header{
+  padding:14px;
+  text-align:center;
+  font-weight:900;
+  font-size:28px;
+  letter-spacing:1px;
+}
+.room{
+  margin:10px;
+  border:5px solid #fff;
+  border-radius:28px;
+  min-height:360px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(255,255,255,.7),transparent 20%),
+    linear-gradient(180deg,#ffd6ea 0 55%,#c69257 55%);
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 12px 0 rgba(0,0,0,.15);
+}
+.room:before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:45%;
+  background:repeating-linear-gradient(90deg,#b8793d 0 35px,#d59b5b 35px 70px);
+}
+.pet-wrap{
+  position:absolute;
+  left:50%;
+  top:52%;
+  transform:translate(-50%,-50%);
+  width:210px;
+  height:210px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:.25s;
+}
+.pet-wrap.happy{animation:bounce .45s}
+.pet-wrap.sleep{transform:translate(-50%,-50%) rotate(-5deg) scale(.96)}
+.pet-img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:none;
+}
+.dog-css{
+  width:190px;
+  height:160px;
+  position:relative;
+}
+.body{
+  position:absolute;
+  width:155px;
+  height:105px;
+  background:#6d4a35;
+  border-radius:55% 55% 45% 45%;
+  bottom:12px;
+  left:18px;
+  box-shadow:inset -12px -8px rgba(0,0,0,.12);
+}
+.head{
+  position:absolute;
+  width:130px;
+  height:115px;
+  background:#7a5238;
+  border-radius:48% 48% 42% 42%;
+  left:30px;
+  top:0;
+  box-shadow:inset -10px -8px rgba(0,0,0,.12);
+}
+.ear{
+  position:absolute;
+  width:38px;
+  height:48px;
+  background:#5b3928;
+  top:-8px;
+  border-radius:12px 12px 25px 25px;
+}
+.ear.l{left:25px;transform:rotate(-18deg)}
+.ear.r{right:25px;transform:rotate(18deg)}
+.eye{
+  position:absolute;
+  width:18px;
+  height:22px;
+  background:#161616;
+  top:42px;
+  border-radius:50%;
+}
+.eye:after{
+  content:"";
+  position:absolute;
+  width:6px;
+  height:6px;
+  background:white;
+  border-radius:50%;
+  top:4px;
+  left:4px;
+}
+.eye.l{left:38px}
+.eye.r{right:38px}
+.muzzle{
+  position:absolute;
+  width:62px;
+  height:45px;
+  background:#f0d1b3;
+  border-radius:50%;
+  left:34px;
+  top:62px;
+}
+.nose{
+  position:absolute;
+  width:24px;
+  height:17px;
+  background:#111;
+  border-radius:50%;
+  left:19px;
+  top:5px;
+}
+.mouth{
+  position:absolute;
+  width:32px;
+  height:16px;
+  border-bottom:4px solid #111;
+  border-radius:50%;
+  left:15px;
+  top:17px;
+}
+.chest{
+  position:absolute;
+  width:55px;
+  height:65px;
+  background:#fff2df;
+  border-radius:50%;
+  left:68px;
+  bottom:10px;
+}
+.leg{
+  position:absolute;
+  width:38px;
+  height:35px;
+  background:#5b3928;
+  bottom:0;
+  border-radius:14px;
+}
+.leg.l{left:45px}
+.leg.r{right:45px}
+.bubble{
+  position:absolute;
+  font-size:44px;
+  left:50%;
+  top:28px;
+  transform:translateX(-50%);
+  display:none;
+  animation:pop .7s;
+}
+.stats{
+  padding:10px 14px;
+  display:grid;
+  gap:8px;
+}
+.stat{
+  background:rgba(255,255,255,.8);
+  border-radius:20px;
+  padding:8px 12px;
+  font-weight:800;
+  box-shadow:0 4px 0 rgba(0,0,0,.08);
+}
+.bar{
+  height:12px;
+  background:#ddd;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:5px;
+}
+.fill{
+  height:100%;
+  width:80%;
+  background:linear-gradient(90deg,#39d353,#b5ff4d);
+  border-radius:20px;
+}
+.actions{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  padding:10px;
+}
+button{
+  border:0;
+  border-radius:18px;
+  padding:12px 6px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  background:#fff;
+  box-shadow:0 5px 0 rgba(0,0,0,.18);
+}
+button:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.panel{
+  margin:10px;
+  padding:14px;
+  background:rgba(255,255,255,.85);
+  border-radius:24px;
+  text-align:center;
+  font-weight:800;
+}
+.shop{
+  display:none;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:10px;
+}
+.item{
+  background:#ffe68a;
+  padding:10px;
+  border-radius:15px;
+  cursor:pointer;
+}
+.game{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,#6ee7ff,#a5ff8a);
+  z-index:5;
+  padding:15px;
+  text-align:center;
+}
+.treat{
+  position:absolute;
+  font-size:38px;
+  cursor:pointer;
+}
+.close-game{
+  position:absolute;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
+  width:80%;
+}
+@keyframes bounce{
+  0%{transform:translate(-50%,-50%) scale(1)}
+  50%{transform:translate(-50%,-62%) scale(1.08)}
+  100%{transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes pop{
+  0%{transform:translateX(-50%) scale(.4);opacity:0}
+  100%{transform:translateX(-50%) scale(1);opacity:1}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <div class="header">🐾 Bully Buddy</div>
+
+  <div class="room">
+    <div class="bubble" id="bubble">🍖</div>
+
+    <div class="pet-wrap" id="pet">
+      <img class="pet-img" id="dogImage" />
+      <div class="dog-css" id="dogCss">
+        <div class="body"></div>
+        <div class="chest"></div>
+        <div class="leg l"></div>
+        <div class="leg r"></div>
+        <div class="head">
+          <div class="ear l"></div>
+          <div class="ear r"></div>
+          <div class="eye l"></div>
+          <div class="eye r"></div>
+          <div class="muzzle">
+            <div class="nose"></div>
+            <div class="mouth"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="game" id="game">
+      <h2>Catch the Treats!</h2>
+      <p>Tap the snacks before they disappear.</p>
+      <div id="score">Score: 0</div>
+      <button class="close-game" onclick="closeGame()">Back Home</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat">Hunger <div class="bar"><div class="fill" id="hungerBar"></div></div></div>
+    <div class="stat">Happy <div class="bar"><div class="fill" id="happyBar"></div></div></div>
+    <div class="stat">Clean <div class="bar"><div class="fill" id="cleanBar"></div></div></div>
+    <div class="stat">Energy <div class="bar"><div class="fill" id="energyBar"></div></div></div>
+  </div>
+
+  <div class="actions">
+    <button onclick="feed()">🍖<br>Food</button>
+    <button onclick="bath()">🛁<br>Bath</button>
+    <button onclick="sleepPet()">💤<br>Sleep</button>
+    <button onclick="play()">🎮<br>Play</button>
+  </div>
+
+  <div class="panel">
+    <div id="message">Take care of your bully!</div>
+
+    <button style="margin-top:10px;width:100%" onclick="toggleShop()">🛒 Shop</button>
+
+    <div class="shop" id="shop">
+      <div class="item" onclick="buy('⛓️ Gold Chain')">⛓️<br>Chain</div>
+      <div class="item" onclick="buy('🧢 Cap')">🧢<br>Cap</div>
+      <div class="item" onclick="buy('🏠 New Room')">🏠<br>Room</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* CAMBIA AQUÍ TU PERRITO:
+   Sube una imagen PNG al mismo folder del index.
+   Ejemplo: const DOG_IMAGE = "dog.png";
+*/
+const DOG_IMAGE = "";
+
+let hunger = Number(localStorage.getItem("hunger")) || 70;
+let happy = Number(localStorage.getItem("happy")) || 70;
+let clean = Number(localStorage.getItem("clean")) || 70;
+let energy = Number(localStorage.getItem("energy")) || 70;
+let score = 0;
+let gameTimer;
+
+const pet = document.getElementById("pet");
+const bubble = document.getElementById("bubble");
+const message = document.getElementById("message");
+
+if(DOG_IMAGE){
+  document.getElementById("dogImage").src = DOG_IMAGE;
+  document.getElementById("dogImage").style.display = "block";
+  document.getElementById("dogCss").style.display = "none";
+}
+
+function save(){
+  localStorage.setItem("hunger", hunger);
+  localStorage.setItem("happy", happy);
+  localStorage.setItem("clean", clean);
+  localStorage.setItem("energy", energy);
+}
+
+function clamp(v){ return Math.max(0, Math.min(100, v)); }
+
+function updateBars(){
+  hunger = clamp(hunger);
+  happy = clamp(happy);
+  clean = clamp(clean);
+  energy = clamp(energy);
+
+  document.getElementById("hungerBar").style.width = hunger + "%";
+  document.getElementById("happyBar").style.width = happy + "%";
+  document.getElementById("cleanBar").style.width = clean + "%";
+  document.getElementById("energyBar").style.width = energy + "%";
+
+  save();
+}
+
+function pop(icon, text){
+  bubble.innerText = icon;
+  bubble.style.display = "block";
+  message.innerText = text;
+  pet.classList.add("happy");
+
+  setTimeout(()=>{
+    bubble.style.display = "none";
+    pet.classList.remove("happy");
+  },700);
+}
+
+function feed(){
+  hunger += 18;
+  happy += 5;
+  clean -= 4;
+  pop("🍖", "Your bully ate like a boss!");
+  updateBars();
+}
+
+function bath(){
+  clean += 25;
+  happy += 3;
+  energy -= 4;
+  pop("🛁", "Fresh and shiny!");
+  updateBars();
+}
+
+function sleepPet(){
+  energy += 25;
+  hunger -= 7;
+  happy += 2;
+  pet.classList.add("sleep");
+  pop("💤", "Nap time!");
+  setTimeout(()=>pet.classList.remove("sleep"),1200);
+  updateBars();
+}
+
+function play(){
+  if(energy < 15){
+    pop("😴", "Too tired to play!");
+    return;
+  }
+  energy -= 10;
+  happy += 15;
+  hunger -= 8;
+  openGame();
+  updateBars();
+}
+
+function toggleShop(){
+  const shop = document.getElementById("shop");
+  shop.style.display = shop.style.display === "grid" ? "none" : "grid";
+}
+
+function buy(item){
+  happy += 8;
+  pop("🎁", item + " equipped!");
+  updateBars();
+}
+
+function openGame(){
+  score = 0;
+  document.getElementById("score").innerText = "Score: 0";
+  document.getElementById("game").style.display = "block";
+  spawnTreat();
+  gameTimer = setInterval(spawnTreat, 900);
+}
+
+function closeGame(){
+  document.getElementById("game").style.display = "none";
+  clearInterval(gameTimer);
+  document.querySelectorAll(".treat").forEach(t=>t.remove());
+  pop("🎮", "Good game! Score: " + score);
+}
+
+function spawnTreat(){
+  const game = document.getElementById("game");
+  const treat = document.createElement("div");
+  treat.className = "treat";
+  treat.innerText = ["🍖","🦴","🥩","🍗"][Math.floor(Math.random()*4)];
+  treat.style.left = Math.random()*80 + 10 + "%";
+  treat.style.top = Math.random()*55 + 25 + "%";
+  treat.onclick = () => {
+    score++;
+    happy += 1;
+    document.getElementById("score").innerText = "Score: " + score;
+    treat.remove();
+    updateBars();
+  };
+  game.appendChild(treat);
+  setTimeout(()=>treat.remove(),1200);
+}
+
+setInterval(()=>{
+  hunger -= 1;
+  clean -= .7;
+  energy -= .5;
+  happy -= .6;
+
+  if(hunger < 30) message.innerText = "Your bully is hungry!";
+  if(clean < 30) message.innerText = "Your bully needs a bath!";
+  if(energy < 30) message.innerText = "Your bully is sleepy!";
+  if(happy < 30) message.innerText = "Your bully wants to play!";
+
+  updateBars();
+},8000);
+
+updateBars();
+</script>
+</body>
+</html>
