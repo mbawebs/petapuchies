@@ -840,6 +840,8 @@ function clearGame(){
 }
 
 function openGame(type){
+  startMusic();
+  
   clearGame();
   activeGame = type;
   gameModal.classList.add("show");
