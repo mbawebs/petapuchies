@@ -55,7 +55,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:10px;ma
   min-height:670px;border-radius:var(--radius);
   border:6px solid rgba(255,255,255,.6);
   box-shadow:var(--shadow);overflow:hidden;position:relative;
-  background-image:url('assets/rooms/room_main_bg.png');
+  background-image:url('assets/rooms/room_main_bg.png?v=hallmark2');
   background-size:cover;
   background-position:center;
   background-repeat:no-repeat;
@@ -353,12 +353,19 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
   width:132px;
   height:72px;
   z-index:7;
-  background-size:contain;
-  background-position:center;
-  background-repeat:no-repeat;
-  background-color:transparent;
+  background:transparent;
   border-radius:0;
   box-shadow:none;
+  display:grid;
+  place-items:center;
+}
+.cloud img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
+  filter:drop-shadow(0 8px 7px rgba(35,38,70,.16));
 }
 .cloud:before,.cloud:after{display:none}
 
@@ -520,30 +527,30 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
 <div class="toast" id="toast">Saved!</div>
 
 <script>
-const PET_IMAGE = "assets/pet/pet_default.png";
-const PET_SAD_IMAGE = "assets/pet/pet_default_sad.png";
+const PET_IMAGE = "assets/pet/pet_default.png?v=hallmark2";
+const PET_SAD_IMAGE = "assets/pet/pet_default_sad.png?v=hallmark2";
 
 const ASSETS = {
   backgrounds:{
-    snack:"assets/backgrounds/bg_snackrun.png",
-    traffic:"assets/backgrounds/bg_roadrush.png",
-    fleas:"assets/backgrounds/bg_fleasmash.png",
-    cloud:"assets/backgrounds/bg_cloudhop.png"
+    snack:"assets/backgrounds/bg_snackrun.png?v=hallmark2",
+    traffic:"assets/backgrounds/bg_roadrush.png?v=hallmark2",
+    fleas:"assets/backgrounds/bg_fleasmash.png?v=hallmark2",
+    cloud:"assets/backgrounds/bg_cloudhop.png?v=hallmark2"
   },
   snacks:[
-    "assets/snacks/snack_bone_01.png",
-    "assets/snacks/snack_cookie_01.png",
-    "assets/snacks/snack_meat_01.png"
+    "assets/snacks/snack_bone_01.png?v=hallmark2",
+    "assets/snacks/snack_cookie_01.png?v=hallmark2",
+    "assets/snacks/snack_meat_01.png?v=hallmark2"
   ],
   cars:[
-    "assets/cars/car_yellow_01.png",
-    "assets/cars/car_blue_01.png",
-    "assets/cars/car_red_01.png"
+    "assets/cars/car_yellow_01.png?v=hallmark2",
+    "assets/cars/car_blue_01.png?v=hallmark2",
+    "assets/cars/car_red_01.png?v=hallmark2"
   ],
-  flea:"assets/fleas/flea_01.png",
+  flea:"assets/fleas/flea_01.png?v=hallmark2",
   clouds:[
-    "assets/platforms/platform_cloud_blue.png",
-    "assets/platforms/platform_cloud_pink.png"
+    "assets/platforms/platform_cloud_blue.png?v=hallmark2",
+    "assets/platforms/platform_cloud_pink.png?v=hallmark2"
   ]
 };
 
@@ -1108,8 +1115,9 @@ function startCloudGame(){
     const cloud = document.createElement("div");
     cloud.className = "cloud";
     cloud.dataset.lane = laneIndex;
-    cloud.style.backgroundImage = `url('${ASSETS.clouds[Math.floor(Math.random()*ASSETS.clouds.length)]}')`;
-    cloud.style.left = (lanes[laneIndex] - 52) + "px";
+    const cloudSrc = ASSETS.clouds[Math.floor(Math.random()*ASSETS.clouds.length)];
+    cloud.innerHTML = `<img src="${cloudSrc}" alt="cloud platform">`;
+    cloud.style.left = (lanes[laneIndex] - 66) + "px";
     cloud.style.top = top + "px";
     gameStage.appendChild(cloud);
     clouds.push(cloud);
