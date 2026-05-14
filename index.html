@@ -738,6 +738,8 @@ function startMusic(){
   bgMusic.play().catch(()=>{});
 }
 $("petWrap").addEventListener("click",()=>{
+  startMusic();
+  
   state.happy = clamp(state.happy + 2);
   addXP(1);
   say("Hi!");
