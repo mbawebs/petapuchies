@@ -956,19 +956,23 @@ function startCloudGame(){
   hopper.innerHTML = renderPetHTML("game");
   gameStage.appendChild(hopper);
 
-  let lane = 1;
-  let y = gameBox.clientHeight - 145;
-  let velocity = -13;
-  let gravity = .55;
-  let alive = true;
-
   const lanes = [
     gameBox.clientWidth * .22,
     gameBox.clientWidth * .50,
     gameBox.clientWidth * .78
   ];
 
+  let lane = 1;
+  let y = gameBox.clientHeight - 190;
+  let velocity = 0;
+  let gravity = .55;
+  let alive = true;
   let clouds = [];
+
+  function updateHopper(){
+    hopper.style.left = (lanes[lane] - 46) + "px";
+    hopper.style.top = y + "px";
+  }
 
   function makeCloud(laneIndex, top){
     const cloud = document.createElement("div");
@@ -980,25 +984,28 @@ function startCloudGame(){
     clouds.push(cloud);
   }
 
-  for(let i=0;i<7;i++){
-    makeCloud(Math.floor(Math.random()*3), gameBox.clientHeight - 60 - i * 95);
-  }
-
-  function updateHopper(){
-    hopper.style.left = (lanes[lane] - 46) + "px";
-    hopper.style.top = y + "px";
+  for(let i = 0; i < 7; i++){
+    makeCloud(Math.floor(Math.random() * 3), gameBox.clientHeight - 70 - i * 95);
   }
 
   const tap = e=>{
     const rect = gameBox.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    if(x < rect.width / 2) lane = Math.max(0,lane-1);
-    else lane = Math.min(2,lane+1);
+
+    if(x < rect.width / 2){
+      lane = Math.max(0, lane - 1);
+    } else {
+      lane = Math.min(2, lane + 1);
+    }
+
     updateHopper();
   };
 
   gameBox.addEventListener("pointerdown", tap);
-  gameData.cleanup = ()=>gameBox.removeEventListener("pointerdown", tap);
+
+  gameData.cleanup = ()=>{
+    gameBox.removeEventListener("pointerdown", tap);
+  };
 
   gameLoop = setInterval(()=>{
     if(!alive) return;
@@ -1011,19 +1018,35 @@ function startCloudGame(){
         const cy = parseFloat(cloud.style.top);
         const clane = Number(cloud.dataset.lane);
 
-        if(clane === lane && y + 80 > cy && y + 80 < cy + 28){
-          velocity = -12.5;
+        const petFeet = y + 82;
+
+        if(
+          clane === lane &&
+          petFeet > cy &&
+          petFeet < cy + 34
+        ){
+          velocity = -11.5;
           addScore(1);
 
+          y = gameBox.clientHeight - 210;
+
           clouds.forEach(c=>{
-            let top = parseFloat(c.style.top) + 32;
-            c.style.top = top + "px";
-            if(top > gameBox.clientHeight + 40){
+            const currentTop = parseFloat(c.style.top);
+            c.style.top = (currentTop + 75) + "px";
+          });
+
+          clouds.forEach(c=>{
+            if(parseFloat(c.style.top) > gameBox.clientHeight + 60){
               c.remove();
-              clouds = clouds.filter(x=>x!==c);
-              makeCloud(Math.floor(Math.random()*3), -40);
             }
           });
+
+          clouds = clouds.filter(c=>parseFloat(c.style.top) <= gameBox.clientHeight + 60);
+
+          while(clouds.length < 7){
+            const highest = Math.min(...clouds.map(c=>parseFloat(c.style.top)));
+            makeCloud(Math.floor(Math.random() * 3), highest - 95);
+          }
         }
       });
     }
