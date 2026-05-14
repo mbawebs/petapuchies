@@ -1291,7 +1291,21 @@ function startCloudGame(){
     if(alive) finishGame();
   },22000);
 }
+function startMusic(){
+  bgMusic.play().catch(()=>{});
+}
 
+startBtn.addEventListener("click", ()=>{
+  startMusic();
+
+  startOverlay.style.transition = ".35s ease";
+  startOverlay.style.opacity = "0";
+  startOverlay.style.pointerEvents = "none";
+
+  setTimeout(()=>{
+    startOverlay.remove();
+  },350);
+});
 initPet();
 updateUI();
 say("Welcome!");
