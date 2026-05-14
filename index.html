@@ -245,7 +245,7 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
   display:grid;place-items:center;z-index:10;pointer-events:none
 }
 .drag-pet img{
-  max-width:100%;max-height:100%;object-fit:contain;
+  width:112px;height:112px;max-width:112px;max-height:112px;object-fit:contain;
   filter:drop-shadow(0 14px 10px rgba(35,38,70,.23))
 }
 .drag-pet .pet-css{width:110px;height:110px}
@@ -254,7 +254,7 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
 }
 .road{
   position:absolute;inset:0;
-  background:rgba(70,76,88,.18);
+  background:rgba(255,255,255,.03);
   pointer-events:none;
 }
 .road:before{
@@ -285,12 +285,80 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
 }
 .cloud{
   position:absolute;
-  width:140px;height:70px;z-index:7;
-  background-image:url('assets/platforms/platform_cloud_01.png');
+  width:105px;height:38px;border-radius:999px;
+  background:white;z-index:7;
+  box-shadow:0 8px 18px rgba(35,38,70,.13);
+}
+.cloud:before,.cloud:after{
+  content:"";position:absolute;background:white;border-radius:50%;
+}
+.cloud:before{width:42px;height:42px;left:16px;top:-18px}
+.cloud:after{width:48px;height:48px;right:14px;top:-22px}
+.hopper{
+  position:absolute;width:92px;height:92px;display:grid;place-items:center;z-index:10;
+  filter:drop-shadow(0 12px 9px rgba(35,38,70,.25))
+}
+.hopper img{width:86px;height:86px;max-width:86px;max-height:86px;object-fit:contain}
+.hopper .pet-css{width:82px;height:82px}
+.hop-note{
+  position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+  background:rgba(255,255,255,.85);border-radius:999px;
+  padding:8px 14px;font-weight:950;z-index:22;
+}
+
+
+/* REAL ASSET POLISH */
+.window,.shelf,.rug{display:none}
+.pet-img{transition:filter .18s ease, transform .18s ease}
+.pet-wrap.happy-wag{animation:idle 2.4s ease-in-out infinite, happyWiggle .28s ease-in-out infinite}
+@keyframes happyWiggle{
+  0%,100%{transform:translateY(0) rotate(-1.4deg) scale(1)}
+  50%{transform:translateY(-3px) rotate(1.4deg) scale(1.012)}
+}
+.pet-hit{animation:petHit .28s ease-in-out 3}
+@keyframes petHit{
+  0%,100%{transform:translateX(0) scale(1)}
+  25%{transform:translateX(-5px) scale(.98)}
+  75%{transform:translateX(5px) scale(.98)}
+}
+.game-stage{
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+.fall-item,.bad-item,.flea,.car{
+  display:grid;
+  place-items:center;
+}
+.fall-item img,.bad-item img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 6px rgba(35,38,70,.22));
+}
+.car img{
+  width:96px;
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 7px rgba(0,0,0,.20));
+}
+.flea img{
+  width:54px;
+  height:54px;
+  object-fit:contain;
+  filter:drop-shadow(0 7px 5px rgba(35,38,70,.22));
+}
+.cloud{
+  position:absolute;
+  width:132px;
+  height:72px;
+  z-index:7;
   background-size:contain;
   background-position:center;
   background-repeat:no-repeat;
-  filter:drop-shadow(0 8px 10px rgba(35,38,70,.16));
+  background-color:transparent;
+  border-radius:0;
+  box-shadow:none;
 }
 .cloud:before,.cloud:after{display:none}
 
@@ -346,6 +414,9 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
 
   <main class="layout">
     <section class="room">
+      <div class="window"></div>
+      <div class="shelf"></div>
+      <div class="rug"></div>
       <div class="bubble" id="bubble">Hi!</div>
 
       <div class="pet-stage">
@@ -450,6 +521,31 @@ button:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(35,38,70,.12)}
 
 <script>
 const PET_IMAGE = "assets/pet/pet_default.png";
+const PET_SAD_IMAGE = "assets/pet/pet_default_sad.png";
+
+const ASSETS = {
+  backgrounds:{
+    snack:"assets/backgrounds/bg_snackrun.png",
+    traffic:"assets/backgrounds/bg_roadrush.png",
+    fleas:"assets/backgrounds/bg_fleasmash.png",
+    cloud:"assets/backgrounds/bg_cloudhop.png"
+  },
+  snacks:[
+    "assets/snacks/snack_bone_01.png",
+    "assets/snacks/snack_cookie_01.png",
+    "assets/snacks/snack_meat_01.png"
+  ],
+  cars:[
+    "assets/cars/car_yellow_01.png",
+    "assets/cars/car_blue_01.png",
+    "assets/cars/car_red_01.png"
+  ],
+  flea:"assets/fleas/flea_01.png",
+  clouds:[
+    "assets/platforms/platform_cloud_blue.png",
+    "assets/platforms/platform_cloud_pink.png"
+  ]
+};
 
 const SAVE_KEY = "yourPetMegaSave_v2";
 
@@ -518,9 +614,10 @@ function initPet(){
   pet.innerHTML = renderPetHTML("main");
 }
 
-function renderPetHTML(mode="main"){
-  if(PET_IMAGE.trim()){
-    return `<img src="${PET_IMAGE}" class="${mode === "main" ? "pet-img" : ""}" alt="Your Pet">`;
+function renderPetHTML(mode="main", sad=false){
+  const src = sad ? PET_SAD_IMAGE : PET_IMAGE;
+  if(src && src.trim()){
+    return `<img src="${src}" class="${mode === "main" ? "pet-img" : ""}" alt="Your Pet">`;
   }
   return `<div class="pet-css"><div class="mouth"></div></div>`;
 }
@@ -544,6 +641,34 @@ function updateUI(){
 
   renderShop();
   save();
+}
+
+function setMainPetSad(isSad){
+  pet.innerHTML = renderPetHTML("main", isSad);
+}
+
+function flashSad(ms=950){
+  setMainPetSad(true);
+  document.querySelectorAll(".drag-pet,.hopper").forEach(el=>el.classList.add("pet-hit"));
+  clearTimeout(window.sadTimer);
+  window.sadTimer = setTimeout(()=>{
+    setMainPetSad(false);
+    document.querySelectorAll(".drag-pet,.hopper").forEach(el=>el.classList.remove("pet-hit"));
+  }, ms);
+}
+
+function wag(ms=900){
+  const wrap = $("petWrap");
+  wrap.classList.add("happy-wag");
+  clearTimeout(window.wagTimer);
+  window.wagTimer = setTimeout(()=>wrap.classList.remove("happy-wag"), ms);
+}
+
+function setGameBackground(src){
+  gameStage.style.backgroundImage = `url('${src}')`;
+  gameStage.style.backgroundSize = "cover";
+  gameStage.style.backgroundPosition = "center";
+  gameStage.style.backgroundRepeat = "no-repeat";
 }
 
 function addXP(amount){
@@ -581,6 +706,8 @@ function doAction(type){
   state.clean = clamp(state.clean);
   state.energy = clamp(state.energy);
   addXP(3);
+  if(type === "food" || type === "love") wag();
+  if(type === "sleep") flashSad(650);
   updateUI();
 }
 
@@ -588,6 +715,7 @@ $("petWrap").addEventListener("click",()=>{
   state.happy = clamp(state.happy + 2);
   addXP(1);
   say("Hi!");
+  wag();
   updateUI();
 });
 
@@ -678,8 +806,6 @@ function clearGame(){
 
   gameStage.innerHTML = "";
   gameStage.style.backgroundImage = "";
-  gameStage.style.backgroundSize = "";
-  gameStage.style.backgroundPosition = "";
   gameScore = 0;
   gameData = {};
   gameScoreEl.textContent = "0";
@@ -767,18 +893,8 @@ function setupDragPet(){
 /* GAME 1: SNACK RUN */
 function startSnackGame(){
   gameTitle.textContent = "🧺 Snack Run";
-
-  gameStage.style.backgroundImage = "url('assets/backgrounds/bg_snackrun.png')";
-  gameStage.style.backgroundSize = "cover";
-  gameStage.style.backgroundPosition = "center";
-
+  setGameBackground(ASSETS.backgrounds.snack);
   setupDragPet();
-
-  const snackImages = [
-    "assets/snacks/snack_bone_01.png",
-    "assets/snacks/snack_cookie_01.png",
-    "assets/snacks/snack_meat_01.png"
-  ];
 
   gameLoop = setInterval(()=>{
     const good = Math.random() > .22;
@@ -786,13 +902,14 @@ function startSnackGame(){
     item.className = good ? "fall-item" : "bad-item";
 
     if(good){
-      item.innerHTML = `<img src="${snackImages[Math.floor(Math.random()*snackImages.length)]}" alt="snack" style="width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(35,38,70,.18));">`;
+      const img = ASSETS.snacks[Math.floor(Math.random()*ASSETS.snacks.length)];
+      item.innerHTML = `<img src="${img}" alt="snack">`;
     }else{
       item.textContent = ["💣","🧦","🪨"][Math.floor(Math.random()*3)];
     }
 
-    let x = Math.random() * (gameBox.clientWidth - 60) + 20;
-    let y = 50;
+    let x = Math.random() * (gameBox.clientWidth - 80) + 20;
+    let y = 58;
     item.style.left = x + "px";
     item.style.top = y + "px";
     gameStage.appendChild(item);
@@ -804,9 +921,14 @@ function startSnackGame(){
       const px = gameData.petX;
       const py = gameBox.clientHeight - 90;
 
-      if(Math.abs((x+20) - px) < 60 && Math.abs(y - py) < 65){
-        if(good) addScore(1);
-        else setScore(gameScore - 2);
+      if(Math.abs((x+32) - px) < 60 && Math.abs(y - py) < 65){
+        if(good){
+          addScore(1);
+          wag(450);
+        }else{
+          setScore(gameScore - 2);
+          flashSad(850);
+        }
         item.remove();
         clearInterval(faller);
       }
@@ -826,22 +948,13 @@ function startSnackGame(){
 /* GAME 2: ROAD RUSH */
 function startTrafficGame(){
   gameTitle.textContent = "🚗 Road Rush";
-
-  gameStage.style.backgroundImage = "url('assets/backgrounds/bg_roadrush.png')";
-  gameStage.style.backgroundSize = "cover";
-  gameStage.style.backgroundPosition = "center";
+  setGameBackground(ASSETS.backgrounds.traffic);
 
   const road = document.createElement("div");
   road.className = "road";
   gameStage.appendChild(road);
 
   setupDragPet();
-
-  const carImages = [
-    "assets/cars/car_blue_01.png",
-    "assets/cars/car_red_01.png",
-    "assets/cars/car_yellow_01.png"
-  ];
 
   gameLoop = setInterval(()=>{
     for(let i=0;i<2;i++){
@@ -855,10 +968,11 @@ function startTrafficGame(){
 
     const car = document.createElement("div");
     car.className = "car";
-    car.innerHTML = `<img src="${carImages[Math.floor(Math.random()*carImages.length)]}" alt="car" style="width:90px;height:auto;object-fit:contain;filter:drop-shadow(0 8px 7px rgba(0,0,0,.2));">`;
+    const img = ASSETS.cars[Math.floor(Math.random()*ASSETS.cars.length)];
+    car.innerHTML = `<img src="${img}" alt="car">`;
 
-    let x = Math.random() * (gameBox.clientWidth - 80) + 25;
-    let y = 45;
+    let x = Math.random() * (gameBox.clientWidth - 110) + 25;
+    let y = 55;
     let speed = 6 + Math.min(7, gameScore * .25);
 
     car.style.left = x + "px";
@@ -872,9 +986,10 @@ function startTrafficGame(){
       const px = gameData.petX;
       const py = gameBox.clientHeight - 90;
 
-      if(Math.abs((x+25) - px) < 58 && Math.abs(y - py) < 65){
+      if(Math.abs((x+45) - px) < 60 && Math.abs(y - py) < 70){
         setScore(gameScore - 3);
         showToast("Crash!");
+        flashSad(950);
         car.remove();
         clearInterval(moveCar);
       }
@@ -895,10 +1010,7 @@ function startTrafficGame(){
 /* GAME 3: FLEA SMASH */
 function startFleaGame(){
   gameTitle.textContent = "🪲 Flea Smash";
-
-  gameStage.style.backgroundImage = "url('assets/backgrounds/bg_fleasmash.png')";
-  gameStage.style.backgroundSize = "cover";
-  gameStage.style.backgroundPosition = "center";
+  setGameBackground(ASSETS.backgrounds.fleas);
 
   const petEl = addDragPet();
   petEl.style.left = "50%";
@@ -910,10 +1022,10 @@ function startFleaGame(){
   gameLoop = setInterval(()=>{
     const flea = document.createElement("div");
     flea.className = "flea";
-    flea.innerHTML = `<img src="assets/fleas/flea_01.png" alt="flea" style="width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 7px 6px rgba(35,38,70,.18));">`;
+    flea.innerHTML = `<img src="${ASSETS.flea}" alt="flea">`;
 
-    let x = Math.random() * (gameBox.clientWidth - 60) + 25;
-    let y = Math.random() * 180 + 70;
+    let x = Math.random() * (gameBox.clientWidth - 70) + 25;
+    let y = Math.random() * 180 + 75;
 
     flea.style.left = x + "px";
     flea.style.top = y + "px";
@@ -933,6 +1045,7 @@ function startFleaGame(){
       if(Math.hypot(centerX()-x,targetY()-y) < 45){
         state.clean = clamp(state.clean - 4);
         setScore(gameScore - 1);
+        flashSad(850);
         flea.remove();
         clearInterval(moveFlea);
       }
@@ -944,6 +1057,7 @@ function startFleaGame(){
       e.stopPropagation();
       flea.style.animation = "fleaPop .15s ease forwards";
       addScore(1);
+      wag(400);
       setTimeout(()=>flea.remove(),130);
       clearInterval(moveFlea);
     };
@@ -960,10 +1074,7 @@ function startFleaGame(){
 /* GAME 4: CLOUD HOP */
 function startCloudGame(){
   gameTitle.textContent = "☁️ Cloud Hop";
-
-  gameStage.style.backgroundImage = "url('assets/backgrounds/bg_cloudhop.png')";
-  gameStage.style.backgroundSize = "cover";
-  gameStage.style.backgroundPosition = "center";
+  setGameBackground(ASSETS.backgrounds.cloud);
 
   const note = document.createElement("div");
   note.className = "hop-note";
@@ -997,6 +1108,7 @@ function startCloudGame(){
     const cloud = document.createElement("div");
     cloud.className = "cloud";
     cloud.dataset.lane = laneIndex;
+    cloud.style.backgroundImage = `url('${ASSETS.clouds[Math.floor(Math.random()*ASSETS.clouds.length)]}')`;
     cloud.style.left = (lanes[laneIndex] - 52) + "px";
     cloud.style.top = top + "px";
     gameStage.appendChild(cloud);
