@@ -3,7 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Your Pet</title>
+<title>Petapuchies</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<meta name="theme-color" content="#ff75b7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Petapuchies">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 
 <style>
 :root{
@@ -778,31 +787,25 @@ function doAction(type){
 }
 let musicStarted = false;
 
-async function startMusic(){
-
+function startMusic(){
   if(musicStarted) return;
-
   musicStarted = true;
+startBtn.addEventListener("click", async ()=>{
 
   try{
     await bgMusic.play();
-  }catch(e){
-    console.log("Audio blocked");
-  }
-}
-  startBtn.addEventListener("pointerdown", async ()=>{
-
-  await startMusic();
+  }catch(e){}
 
   startOverlay.style.transition = ".35s ease";
   startOverlay.style.opacity = "0";
-  startOverlay.style.pointerEvents = "none";
 
   setTimeout(()=>{
     startOverlay.remove();
   },350);
 
 });
+  bgMusic.play().catch(()=>{});
+}
 $("petWrap").addEventListener("click",()=>{
   startMusic();
   
